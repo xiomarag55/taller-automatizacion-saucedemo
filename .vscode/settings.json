@@ -1,0 +1,12 @@
+{
+  "cucumber.features": [
+    "saucedemo-screenplay/src/test/resources/features/**/*.feature",
+    "saucedemo-nest/docs/*.feature"
+  ],
+  "cucumber.glue": [
+    "saucedemo-screenplay/src/test/java/**/stepdefinitions/*.java"
+  ],
+  "files.associations": {
+    "*.feature": "cucumber"
+  }
+}

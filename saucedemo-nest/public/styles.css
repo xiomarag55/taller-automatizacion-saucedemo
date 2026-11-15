@@ -1,0 +1,400 @@
+/* ============================================================
+   Swag Labs — rediseño futurista
+   Líneas finas, acentos geométricos, grid sutil y partículas.
+   IMPORTANTE (QA): ningún data-test, id ni texto funcional cambia;
+   los elementos con texto verificado por el bot NO usan text-transform,
+   porque getText() de Selenium sí refleja esa transformación.
+   ============================================================ */
+
+:root {
+  --bg-0: #05080f;
+  --bg-1: #0a1120;
+  --surface: rgba(13, 22, 38, 0.66);
+  --line: rgba(92, 240, 205, 0.30);
+  --line-soft: rgba(122, 170, 255, 0.14);
+  --accent: #39f0c0;
+  --accent-2: #5aa7ff;
+  --danger: #ff5d7a;
+  --text: #e8f4f1;
+  --text-dim: #93a7bd;
+  --mono: Consolas, "Cascadia Mono", "Courier New", monospace;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(900px 520px at 85% -10%, rgba(90, 167, 255, 0.14), transparent 60%),
+    radial-gradient(720px 440px at 8% 110%, rgba(57, 240, 192, 0.10), transparent 60%),
+    linear-gradient(180deg, var(--bg-1), var(--bg-0));
+  background-attachment: fixed;
+}
+
+/* Grid sutil de fondo */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--line-soft) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
+  background-size: 44px 44px;
+  -webkit-mask-image: radial-gradient(ellipse at 50% 28%, #000 30%, transparent 85%);
+  mask-image: radial-gradient(ellipse at 50% 28%, #000 30%, transparent 85%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Capa de partículas (canvas decorativo) */
+#bg-particles {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+#app { position: relative; z-index: 1; }
+
+[hidden] { display: none !important; }
+
+::selection { background: rgba(57, 240, 192, 0.30); }
+
+/* ---------- Header ---------- */
+header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 24px;
+  background: rgba(7, 12, 22, 0.78);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+}
+header::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: -1px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: 0.7;
+}
+header .logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: 0.32em;
+  text-transform: uppercase; /* el logo no se verifica por texto */
+  color: var(--text);
+}
+header .logo::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  transform: rotate(45deg);
+  border: 1px solid var(--accent);
+  box-shadow: 0 0 10px rgba(57, 240, 192, 0.55), inset 0 0 4px rgba(57, 240, 192, 0.45);
+}
+header nav { display: flex; gap: 18px; align-items: center; }
+
+#menu { display: inline-flex; gap: 16px; align-items: center; }
+#menu a {
+  color: var(--text-dim);
+  text-decoration: none;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  border-bottom: 1px solid transparent;
+  padding-bottom: 2px;
+  transition: color 0.2s, border-color 0.2s;
+}
+#menu a:hover { color: var(--accent); border-color: var(--accent); }
+
+.cart-link {
+  position: relative;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 20px;
+  padding: 6px 10px;
+  border: 1px solid var(--line-soft);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.cart-link:hover {
+  border-color: var(--accent);
+  box-shadow: 0 0 12px rgba(57, 240, 192, 0.25);
+}
+.badge {
+  position: absolute;
+  top: -10px;
+  right: -12px;
+  min-width: 21px;
+  height: 21px;
+  display: grid;
+  place-items: center;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: #04221b;
+  background: var(--accent);
+  clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%); /* hexágono */
+  box-shadow: 0 0 12px rgba(57, 240, 192, 0.6);
+}
+
+/* ---------- Botones ---------- */
+button, .btn {
+  cursor: pointer;
+  padding: 10px 18px;
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--line);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase; /* los botones se verifican por clic, no por texto */
+  clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s, color 0.2s;
+}
+button:hover {
+  border-color: var(--accent);
+  box-shadow: 0 0 14px rgba(57, 240, 192, 0.25), inset 0 0 8px rgba(57, 240, 192, 0.08);
+}
+button.primary {
+  border-color: var(--accent);
+  color: #04221b;
+  background: linear-gradient(135deg, var(--accent), #2bd4e8);
+}
+button.primary:hover { box-shadow: 0 0 18px rgba(57, 240, 192, 0.45); }
+button.danger {
+  border-color: rgba(255, 93, 122, 0.55);
+  color: var(--danger);
+}
+button.danger:hover {
+  border-color: var(--danger);
+  box-shadow: 0 0 14px rgba(255, 93, 122, 0.30);
+}
+
+/* ---------- Título de sección ---------- */
+.title {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 26px 24px 18px;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 0.16em; /* sin uppercase: el bot compara "Products" literal */
+}
+.title::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  transform: rotate(45deg);
+  border: 1px solid var(--accent-2);
+}
+.title::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, var(--line), transparent);
+}
+
+/* ---------- Tarjetas de producto ---------- */
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  padding: 0 24px 32px;
+}
+.item {
+  position: relative;
+  width: 272px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--surface);
+  border: 1px solid var(--line-soft);
+  backdrop-filter: blur(6px);
+  clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 0 100%); /* esquina recortada */
+  transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s;
+}
+.item:hover {
+  border-color: var(--line);
+  box-shadow: 0 0 22px rgba(57, 240, 192, 0.10);
+  transform: translateY(-2px);
+}
+/* soporte geométrico: escuadra inferior izquierda */
+.item::before {
+  content: "";
+  position: absolute;
+  left: -1px;
+  bottom: -1px;
+  width: 14px;
+  height: 14px;
+  border-left: 1px solid var(--accent);
+  border-bottom: 1px solid var(--accent);
+}
+/* línea diagonal que remarca la esquina recortada */
+.item::after {
+  content: "";
+  position: absolute;
+  top: 7px;
+  right: -3px;
+  width: 22px;
+  height: 1px;
+  background: var(--accent);
+  transform: rotate(45deg);
+  opacity: 0.85;
+}
+.item .name {
+  font-weight: 600;
+  color: var(--accent);
+  cursor: pointer;
+  text-decoration: none;
+}
+.item [data-test="inventory-item-desc"] {
+  color: var(--text-dim);
+  font-size: 13px;
+  line-height: 1.55;
+}
+.item .price {
+  margin-top: 2px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line-soft);
+  font-family: var(--mono);
+  font-size: 20px;
+  font-weight: 600;
+  color: #dffcf3;
+}
+.item button { margin-top: auto; width: 100%; }
+
+/* ---------- Login / formularios ---------- */
+.login {
+  position: relative;
+  max-width: 380px;
+  margin: 72px auto;
+  padding: 30px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: var(--surface);
+  border: 1px solid var(--line-soft);
+  backdrop-filter: blur(8px);
+}
+/* escuadras en esquinas opuestas */
+.login::before {
+  content: "";
+  position: absolute;
+  top: -1px; left: -1px;
+  width: 22px; height: 22px;
+  border-top: 1px solid var(--accent);
+  border-left: 1px solid var(--accent);
+}
+.login::after {
+  content: "";
+  position: absolute;
+  bottom: -1px; right: -1px;
+  width: 22px; height: 22px;
+  border-bottom: 1px solid var(--accent);
+  border-right: 1px solid var(--accent);
+}
+.login h1 {
+  margin: 0 0 6px;
+  text-align: center;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 0.38em;
+  text-transform: uppercase;
+  text-shadow: 0 0 18px rgba(57, 240, 192, 0.35);
+}
+
+input {
+  padding: 11px 12px;
+  background: rgba(5, 10, 18, 0.6);
+  border: 1px solid var(--line-soft);
+  border-left: 2px solid var(--accent);
+  border-radius: 0;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 14px;
+  letter-spacing: 0.03em;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+input::placeholder { color: var(--text-dim); letter-spacing: 0.08em; }
+input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 12px rgba(57, 240, 192, 0.18);
+}
+
+/* ---------- Error (el texto se verifica literal: sin transformaciones) ---------- */
+.error {
+  padding: 11px 14px;
+  color: #ffd9e0;
+  background: rgba(255, 93, 122, 0.10);
+  border: 1px solid rgba(255, 93, 122, 0.45);
+  border-left: 3px solid var(--danger);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.creds {
+  padding-top: 10px;
+  border-top: 1px dashed var(--line-soft);
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1.8;
+  color: var(--text-dim);
+}
+
+/* ---------- Acciones y resumen ---------- */
+.actions {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 0 24px 28px;
+}
+
+.summary {
+  margin: 0 24px 28px;
+  padding: 18px 22px;
+  max-width: 480px;
+  background: var(--surface);
+  border: 1px solid var(--line-soft);
+  border-left: 2px solid var(--accent-2);
+  line-height: 2;
+}
+.summary [data-test="subtotal-label"],
+.summary [data-test="tax-label"],
+.summary [data-test="total-label"] {
+  font-family: var(--mono);
+  font-size: 14px;
+}
+.summary [data-test="total-label"] {
+  border-top: 1px solid var(--line-soft);
+  padding-top: 6px;
+  color: var(--accent);
+}
+[data-test="complete-header"] {
+  margin: 4px 0 10px;
+  font-weight: 600;
+  color: var(--accent);
+  text-shadow: 0 0 16px rgba(57, 240, 192, 0.35);
+}
+[data-test="complete-text"] { color: var(--text-dim); max-width: 420px; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 600px) {
+  header { padding: 12px 16px; }
+  header .logo { font-size: 15px; letter-spacing: 0.2em; }
+  .title, .actions { margin-left: 16px; margin-right: 16px; padding-left: 0; padding-right: 0; }
+  .list { padding: 0 16px 24px; }
+  .item { width: 100%; }
+  .login { margin: 40px 16px; }
+  .summary { margin: 0 16px 24px; }
+}

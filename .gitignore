@@ -1,0 +1,27 @@
+# Dependencias y compilados — Node (saucedemo-nest)
+node_modules/
+dist/
+
+# Gradle / Java (saucedemo-screenplay)
+.gradle/
+build/
+target/
+*.class
+
+# Navegador fijado (Chrome for Testing, ~500 MB — se reinstala con:
+# npx @puppeteer/browsers install chrome@157.0.8103.40 --path tools)
+tools/
+
+# Reportes y logs
+*.log
+logs/
+
+# Sistema operativo / IDE
+Thumbs.db
+.DS_Store
+.idea/
+*.iml
+.settings/
+.project
+.classpath
+bin/

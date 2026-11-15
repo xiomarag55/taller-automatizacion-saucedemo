@@ -1,0 +1,49 @@
+plugins {
+    id 'java'
+    id 'net.serenity-bdd.serenity-gradle-plugin' version '4.2.1'
+}
+
+group 'co.com.taller.saucedemo'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    serenityVersion = '4.2.1'
+}
+
+dependencies {
+    implementation "net.serenity-bdd:serenity-core:$serenityVersion"
+    implementation "net.serenity-bdd:serenity-junit:$serenityVersion"
+    implementation "net.serenity-bdd:serenity-screenplay:$serenityVersion"
+    implementation "net.serenity-bdd:serenity-screenplay-webdriver:$serenityVersion"
+    implementation "net.serenity-bdd:serenity-cucumber:$serenityVersion"
+    implementation 'org.slf4j:slf4j-simple:2.0.9'
+
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.hamcrest:hamcrest:2.2'
+    testImplementation 'org.assertj:assertj-core:3.25.3'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+test {
+    // Parametros que se pueden cambiar desde la consola: -Dsut.url=... -Ddelay.ms=1500 -Dheadless.mode=true
+    ['sut.url', 'delay.ms', 'headless.mode', 'cucumber.filter.tags'].each { k ->
+        if (System.getProperty(k)) systemProperty k, System.getProperty(k)
+    }
+    systemProperty 'file.encoding', 'UTF-8'
+    testLogging.showStandardStreams = true
+    ignoreFailures = true   // el reporte debe generarse aunque falle un escenario
+    finalizedBy 'aggregate'
+}
+
+gradle.startParameter.continueOnFailure = true
