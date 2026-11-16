@@ -177,7 +177,7 @@ cd ../saucedemo-screenplay
 | `-Dheadless.mode=true -Ddelay.ms=0` | Rápido / CI |
 | `-Dcucumber.filter.tags="@smoke"` | Un solo tag |
 | `-Dsut.url=http://localhost:3100` | App en otro puerto |
-| `--rerun` | Forzar ejecución si Gradle dice "up-to-date" |
+| `--rerun-tasks` | Forzar ejecución si Gradle dice "up-to-date" (el alias `--rerun` no existe) |
 
 Requisitos: Node 18+, JDK 17–21 (`JAVA_HOME` → jdk-21; Gradle 8.6 no soporta el
 JDK 26 del PATH) e internet la primera vez (Gradle, dependencias, chromedriver).
@@ -188,22 +188,24 @@ JDK 26 del PATH) e internet la primera vez (Gradle, dependencias, chromedriver).
 |---|---|
 | `No se pudo contactar el SUT` | Falta `npm run start` en saucedemo-nest |
 | Gradle no arranca | `JAVA_HOME` debe apuntar al JDK 21 |
-| "BUILD SUCCESSFUL" en segundos y sin pruebas | Gradle cacheó: agrega `--rerun` |
+| "BUILD SUCCESSFUL" en segundos y sin pruebas | Gradle cacheó: agrega `--rerun-tasks` |
 | Puerto 3000 ocupado | `PORT=3100 npm run start` + `-Dsut.url=…` |
-| **Clics que "no hacen nada"** (el paso pasa pero la página no reacciona, o el reporte dice que un elemento nunca apareció) | Bug del Chrome instalado 157.0.8103.52: descarta clics sintetizados de WebDriver de forma intermitente (la suite cayó de 17/17 a 5/17 sin cambios de código; el renderer sigue vivo pero el `pointerdown` nunca llega al DOM). **Solución aplicada**: `serenity.conf` fija el navegador a Chrome for Testing 157.0.8103.40 en `tools/chrome/…`. Si mueves el proyecto de carpeta o de máquina, reinstala con `npx @puppeteer/browsers install chrome@157.0.8103.40 --path <ruta>/tools` y actualiza la ruta `binary` en `serenity.conf`. |
+| **En PowerShell, Gradle dice "Task '.filter.tags=…' not found" o "Task '.ms=2000' not found"** | PowerShell 5.1 parte un argumento `-Dclave.con.puntos=valor` en el primer punto cuando va **sin comillas** alrededor de todo el argumento. `-Dsingle=2000` (sin punto en la clave) funciona suelto; `-Ddelay.ms=2000` o `-Dcucumber.filter.tags=@x` **necesitan comillas simples envolviendo todo el argumento**: `'-Ddelay.ms=2000'`. Confirmado probando ambas formas. |
+| **Clics que "no hacen nada"** (el paso pasa pero la página no reacciona, o el reporte dice que un elemento nunca apareció) | Bug intermitente del Chrome instalado: en algunas versiones/momentos descarta clics sintetizados de WebDriver (el renderer sigue vivo pero el `pointerdown` nunca llega al DOM). **No hay una solución de configuración confiable**: se intentó fijar el navegador a una build antigua vía `serenity.conf` (`capabilities."goog:chromeOptions".binary` y, después, `browserVersion`), y también vía la variable `SE_CHROME_BINARY`. Las tres vías fueron verificadas directamente (revisando qué `chrome.exe` se lanza de verdad durante la prueba, y leyendo el código fuente de Serenity/Selenium) y **ninguna tiene efecto** en esta combinación de versiones — el navegador real que se lanza siempre es el de `Program Files`, nunca un binario fijado. La carpeta `tools/chrome/` quedó sin uso por esto. **Mitigación real**: el bug es intermitente, no permanente — si falla, corre el comando de nuevo (`--rerun-tasks`). Si vuelve a fallar seguido durante la exposición, considera agregar un reintento al clic en `AgregarAlCarrito`/`AbrirCarrito`/`QuitarDelCarrito` (click → esperar ~3s → si no cambió, click de nuevo) en vez de seguir peleando con la configuración del navegador. |
 | El reporte no aparece | Ejecuta `test` y `aggregate` juntos |
 
 Nota de método (lección del taller): cuando la suite pase de verde a rojo **sin cambios
-de código**, sospecha del entorno (navegador auto-actualizado, driver, SO) y bisecciona
-con el cliente real (Serenity), no solo con herramientas auxiliares — una herramienta de
-diagnóstico desactualizada puede fabricar falsos culpables.
+de código**, sospecha del entorno (navegador auto-actualizado, driver, SO) — pero
+verifica la sospecha con evidencia directa (qué proceso se lanza realmente, qué dice
+el código fuente de la librería) antes de dar una config por "arreglada". Un log que
+*parece* confirmar el fix (p. ej. que no muestre errores) no prueba que se haya aplicado.
 
 ## 6. Mapa de archivos
 
 ```
 taller-calidad/
-├── GUIA.md                        ← este documento
-├── tools/chrome/…                 ← Chrome for Testing 157.0.8103.40 (navegador fijado)
+├── README.md                      ← este documento
+├── tools/chrome/…                 ← Chrome for Testing 157.0.8103.40 (sin uso actualmente, ver §5)
 ├── saucedemo-nest/
 │   ├── src/{auth,products,cart,checkout}/   módulos NestJS
 │   ├── src/test-support.controller.ts       POST /api/test/reset
